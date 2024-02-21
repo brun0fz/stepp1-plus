@@ -315,11 +315,11 @@ t[#t+1] = Def.ActorFrame {
 	children = {
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/_cursor_line") )..{
 			InitCommand=cmd(zoom,0.67;y,95);
-			OnCommand=cmd(stoptweening;y,145;sleep,.1;linear,.2;y,95);
+			OnCommand=cmd(stoptweening;y,95;sleep,.1;linear,.2;y,95);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/_cursor_ball") )..{
 			InitCommand=cmd(zoom,0.67;y,95;x,-155);
-			OnCommand=cmd(stoptweening;y,145;sleep,.1;linear,.2;y,95);
+			OnCommand=cmd(stoptweening;y,95;sleep,.1;linear,.2;y,95);
 			UpdateCommand=function(self)
 				local cur_index = SCREENMAN:GetTopScreen():GetWheelCurrentIndex();
 				local total = SCREENMAN:GetTopScreen():GetWheelNumItems();

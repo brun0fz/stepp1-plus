@@ -1,3 +1,11 @@
+StepP1 Plus v1.1.0 Release - ??/??/??
+- Removed Old Score and Grade, as well as colored A grades. Now P.Score and P.Grade are the main grade systems. This was necessary in order to fix bugs with high score priority and to enable stage break/stage pass logging.
+- Added capability of recording the Stage Break / Stage Pass status of high scores. Stage Pass scores will always replace Stage Break scores. Stage Break will be displayed as broken letters on the song select screen.
+- Added new stylized grades and plates for all the new grades (SSS+, etc).
+- Because of deep changes to the high score logic, this version is INCOMPATIBLE WITH OLD SAVES. Please do not use an Old Save Data, as old high scores and grades will be displayed wrongly on the new formulas.
+- Removed exclusive Half-Double ball and returned the under-labels for Half-Double and Couples charts. This was done because we couldn't sort Half-Double charts separately so it made the order of charts weird.
+- Changed ScreenLogo to make the non-commercial and fanmade nature of this project clearer.
+
 StepP1 Plus v1.0.0 Release - 12/01/2024:
 - Fixed duplicated judgment animation.
 - Better alignment of grades and plate on ScreenEvaluation.

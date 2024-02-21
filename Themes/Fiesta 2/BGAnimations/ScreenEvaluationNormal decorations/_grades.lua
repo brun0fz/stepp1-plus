@@ -1,8 +1,9 @@
 local t = Def.ActorFrame {};
 
 local t_sleep = 4.2;
-local piu_grades = { "SSS", "X", "G", "A", "B", "C", "D", "F" };
-local new_record_delays = { 1, 2, 2, 3, 2, 1, 1, 1};
+local piu_grades = { "SSS+", "SSS", "SS+", "SS", "S+", "S", "AAA+", "AAA", "AA+", "AA", "A+", "A", "B", "C", "D", "F" };
+local piu_grades_old = { "SSS", "SSS", "X", "X", "G", "G", "A", "A", "A", "A", "A", "A", "B", "C", "D", "F" };
+local new_record_delays = { 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 2, 1, 1, 1};
 
 local p1_joined = GAMESTATE:IsSideJoined(PLAYER_1);
 local p2_joined = GAMESTATE:IsSideJoined(PLAYER_2);
@@ -10,40 +11,34 @@ local p2_joined = GAMESTATE:IsSideJoined(PLAYER_2);
 local p1_grade = 21; -- Grade_Fail
 local p2_grade = 21; -- Grade_Fail
 
-local bads = { PLAYER_1 = false, PLAYER_2 = false };
 local stage_break = { PLAYER_1 = false, PLAYER_2 = false };
-local misscount = { PLAYER_1 = 99, PLAYER_2 = 99 };
 
 if p1_joined then
 	local p1_pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1)
-	p1_grade = p1_pss:GetGradeInt()+1
-	if p1_pss:GetTapNoteScores('TapNoteScore_W5') > 0 then
-		bads[PLAYER_1] = true;
-	end
+	local p1_score = (math.floor(p1_pss:GetScore()/100)) - 1000000;
 	if p1_pss:GetReachedLifeZero() then
 		stage_break[PLAYER_1] = true;
+		p1_score = p1_score + 1000000;
 	end
-	misscount[PLAYER_1] = p1_pss:GetTapNoteScores('TapNoteScore_Miss') + p1_pss:GetTapNoteScores('TapNoteScore_CheckpointMiss');
+	p1_grade = CalcPGradeInt(p1_score);
 end;
 
 if p2_joined then
 	local p2_pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2)
-	p2_grade = p2_pss:GetGradeInt()+1
-	if p2_pss:GetTapNoteScores('TapNoteScore_W5') > 0 then
-		bads[PLAYER_2] = true;
-	end
+	local p2_score = (math.floor(p2_pss:GetScore()/100)) - 1000000;
 	if p2_pss:GetReachedLifeZero() then
 		stage_break[PLAYER_2] = true;
+		p2_score = p2_score + 1000000;
 	end
-	misscount[PLAYER_2] = p2_pss:GetTapNoteScores('TapNoteScore_Miss') + p2_pss:GetTapNoteScores('TapNoteScore_CheckpointMiss');
+	p2_grade = CalcPGradeInt(p2_score);
 end;
 
 if p1_grade == 21 then
-	p1_grade = 8;
+	p1_grade = 16;
 end;
 
 if p2_grade == 21 then
-	p2_grade = 8;
+	p2_grade = 16;
 end;
 
 local function GradeActor(pn)
@@ -53,25 +48,12 @@ local function GradeActor(pn)
 	
 	-- 21 corresponde a Grade_Fail
 	if igrade == 21 then
-		igrade = 8;
+		igrade = 16;
 	end;
 	
 	local grade = piu_grades[igrade];
-	if grade == "G" and bads[pn] then grade = "S" end;
 	
 	local condition = stage_break[pn] and "B" or "R"
-
-	if grade == "A" and condition == "R" then
-		if misscount[pn] <= 5 then 
-			grade = "A_Gold"; --marvelous game
-		elseif misscount[pn] <= 10 then 
-			grade = "A_Blue"; --talented game
-		elseif misscount[pn] <= 20 then 
-			grade = "A"; --fair game
-		elseif misscount[pn] >= 20 then 
-			grade = "A_Red"; --rough game
-		end;
-	end;
 	
 	local t = Def.ActorFrame {};
 	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/"..condition.."_"..grade..".png") )..{
@@ -105,13 +87,13 @@ end;
 -- Grades
 if p1_joined then
 	t[#t+1] = GradeActor(PLAYER_1)..{
-		InitCommand=cmd(x,SCREEN_CENTER_X-156;y,SCREEN_CENTER_Y-50);
+		InitCommand=cmd(x,SCREEN_CENTER_X-156;y,SCREEN_CENTER_Y-40);
 	};
 end;
 
 if p2_joined then
 	t[#t+1] = GradeActor(PLAYER_2)..{
-		InitCommand=cmd(x,SCREEN_CENTER_X+156;y,SCREEN_CENTER_Y-50);
+		InitCommand=cmd(x,SCREEN_CENTER_X+156;y,SCREEN_CENTER_Y-40);
 	};
 end;
 
@@ -133,11 +115,12 @@ end;
 
 if not p1_joined and p2_joined then
 	BestGrade = p2_grade;
-end;	
-	
+end;
+
+local grade_sound = piu_grades[BestGrade]
 t[#t+1] = Def.Sound {
 	InitCommand=function(self)
-		self:load(THEME:GetPathS('','Rank/RANK_'..piu_grades[BestGrade]..'.mp3'));
+		self:load(THEME:GetPathS('','Rank/RANK_'..piu_grades_old[BestGrade]..'.mp3'));
 	end;
 	OnCommand=cmd(sleep,t_sleep+.2;queuecommand,'Play');
 	PlayCommand=cmd(play);
@@ -146,7 +129,7 @@ t[#t+1] = Def.Sound {
 
 t[#t+1] = Def.Sound {
 	InitCommand=function(self)
-		self:load(THEME:GetPathS('','Rank/RANK_'..piu_grades[BestGrade]..'_B.mp3'));
+		self:load(THEME:GetPathS('','Rank/RANK_'..piu_grades_old[BestGrade]..'_B.mp3'));
 	end;
 	OnCommand=cmd(sleep,t_sleep+.2;queuecommand,'Play');
 	PlayCommand=cmd(play);

@@ -153,16 +153,40 @@ end
 
 --
 
+function CalcPGradeInt(pscore)
+	local pgrade = (
+			(pscore >= 995000 and 1)	or 
+			(pscore >= 990000 and 2)	or 
+			(pscore >= 985000 and 3)	or
+			(pscore >= 980000 and 4)	or
+			(pscore >= 975000 and 5)	or
+			(pscore >= 970000 and 6)	or 
+			(pscore >= 960000 and 7)	or 
+			(pscore >= 950000 and 8)	or
+			(pscore >= 925000 and 9)	or
+			(pscore >= 900000 and 10)	or
+			(pscore >= 825000 and 11)	or
+			(pscore >= 750000 and 12)	or
+			(pscore >= 650000 and 13)	or
+			(pscore >= 550000 and 14)	or
+			(pscore >= 450000 and 15) 	or
+			16
+			);
+	return pgrade;
+end
+
+--
+
 function CalcPlate(greats,goods,bads,misses)
 	local plate = (
-		(misses >= 21 and "Rough Game")		or 
-		(misses >= 11 and "Fair Game")		or
-		(misses >= 6 and "Talented Game")	or
-		(misses >= 1 and "Marvelous Game")	or
-		(bads >= 1 and "Superb Game")		or 
-		(goods >= 1 and "Extreme Game")		or 
-		(greats >= 1 and "Ultimate Game")	or
-		"Perfect Game"
+		(misses >= 21 and "ROUGH GAME")		or 
+		(misses >= 11 and "FAIR GAME")		or
+		(misses >= 6 and "TALENTED GAME")	or
+		(misses >= 1 and "MARVELOUS GAME")	or
+		(bads >= 1 and "SUPERB GAME")		or 
+		(goods >= 1 and "EXTREME GAME")		or 
+		(greats >= 1 and "ULTIMATE GAME")	or
+		"PERFECT GAME"
 		);
 	return plate;
 end;
@@ -205,21 +229,21 @@ end;
 
 function ColorPlate(plate)
 	local PlateColor = "";
-	if plate == "RG" or plate == "Rough Game" then
+	if plate == "RG" or plate == "ROUGH GAME" then
 		PlateColor = "0.847,0.552,0.254,1";
-	elseif plate == "FG" or plate == "Fair Game" then
+	elseif plate == "FG" or plate == "FAIR GAME" then
 		PlateColor = "0.847,0.552,0.254,1";
-	elseif plate == "TG" or plate == "Talented Game"then
+	elseif plate == "TG" or plate == "TALENTED GAME"then
 		PlateColor = "#FFFFFF";
-	elseif plate ==	"MG" or plate == "Marvelous Game" then
+	elseif plate ==	"MG" or plate == "MARVELOUS GAME" then
 		PlateColor = "#FFFFFF";
-	elseif plate == "SG" or plate == "Superb Game" then
+	elseif plate == "SG" or plate == "SUPERB GAME" then
 		PlateColor = "#FEE108";
-	elseif plate == "EG" or plate == "Extreme Game" then
+	elseif plate == "EG" or plate == "EXTREME GAME" then
 		PlateColor = "#FEE108";
-	elseif plate == "UG" or plate == "Ultimate Game" then
+	elseif plate == "UG" or plate == "ULTIMATE GAME" then
 		PlateColor = "#A5FDFD";
-	elseif plate == "PG" or plate == "Perfect Game" then
+	elseif plate == "PG" or plate == "PERFECT GAME" then
 		PlateColor = "#A5FDFD";
 	else
 		PlateColor = "#FFFFFF";
@@ -248,13 +272,6 @@ local t = Def.ActorFrame {
 			GoBackSelectingSongMessageCommand=cmd(stoptweening;zoomx,1;linear,.2;zoomx,0);
 			OffCommand=cmd(stoptweening;zoomx,1;linear,.2;zoomx,0);
 		};
-		LoadActor( THEME:GetPathG("","ScreenSelectMusic/highscores_total_label.png") )..{
-			InitCommand=cmd(y,-38;basezoom,.66;zoomx,0);
-			ChangeStepsMessageCommand=cmd(stoptweening;zoomx,1);
-			StartSelectingStepsMessageCommand=cmd(stoptweening;zoomx,0;linear,.2;zoomx,1);
-			GoBackSelectingSongMessageCommand=cmd(stoptweening;zoomx,1;linear,.2;zoomx,0);
-			OffCommand=cmd(stoptweening;zoomx,1;linear,.2;zoomx,0);
-		};
 		--personal hs
 		LoadFont("_karnivore lite white")..{
 			InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,-14;maxwidth,85);
@@ -264,11 +281,16 @@ local t = Def.ActorFrame {
 				if GAMESTATE:HasProfile(pn) then
 					local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
 					if (#HSList ~= 0) then
-						local score = HSList[1]:GetScore();
-						if score > 9999999999 then
-							score = 9999999999;
+						local score = math.floor(HSList[1]:GetScore() / 100);
+						if score > 2000000 then 
+							score = 0;
+							self:settext("");
+						elseif score > 1000000 then 
+							score = score - 1000000;
+							self:settext( AddDots(score) );
+						else
+							self:settext( AddDots(score) );
 						end;
-						self:settext( AddDots(score) );
 					else
 						self:settext("")
 					end;
@@ -313,11 +335,16 @@ local t = Def.ActorFrame {
 				local cur_steps = GAMESTATE:GetCurrentSteps(pn);
 				local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
 				if (#HSList ~= 0) then
-					local score = HSList[1]:GetScore();
-					if score > 9999999999 then
-						score = 9999999999;
+					local score = math.floor(HSList[1]:GetScore()/100);
+					if score > 2000000 then 
+						score = 0;
+						self:settext("");
+					elseif score > 1000000 then 
+						score = score - 1000000;
+						self:settext( AddDots(score) );
+					else
+						self:settext( AddDots(score) );
 					end;
-					self:settext( AddDots(score) );
 				else
 					self:settext("")
 				end;
@@ -369,13 +396,6 @@ function GetPHighScoresFrame( pn, appear_on_start )
 		children = {
 			LoadActor( THEME:GetPathG("","ScreenSelectMusic/highscores_bg") )..{
 				InitCommand=cmd(basezoom,.66;zoomx,0);
-				ChangeStepsMessageCommand=cmd(stoptweening;zoomx,1);
-				StartSelectingStepsMessageCommand=cmd(stoptweening;zoomx,0;linear,.2;zoomx,1);
-				GoBackSelectingSongMessageCommand=cmd(stoptweening;zoomx,1;linear,.2;zoomx,0);
-				OffCommand=cmd(stoptweening;zoomx,1;linear,.2;zoomx,0);
-			};
-			LoadActor( THEME:GetPathG("","ScreenSelectMusic/highscores_pscore_label.png") )..{
-				InitCommand=cmd(y,-38;basezoom,.66;zoomx,0);
 				ChangeStepsMessageCommand=cmd(stoptweening;zoomx,1);
 				StartSelectingStepsMessageCommand=cmd(stoptweening;zoomx,0;linear,.2;zoomx,1);
 				GoBackSelectingSongMessageCommand=cmd(stoptweening;zoomx,1;linear,.2;zoomx,0);
@@ -678,7 +698,7 @@ function GetDiffNumberBall( cur_steps )
 	elseif style=='StepsType_Pump_Single' then return (0);
 	elseif style=='StepsType_Pump_Routine' or (description ~= "RANDOMSONGS" and style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then return (5);
 	elseif ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"DP" ) ) or style=='StepsType_Pump_Couple' then return(3);
-	elseif (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then return (4);
+	elseif style=='StepsType_Pump_Halfdouble' then return (2);
 	elseif style=='StepsType_Pump_Double' then return (2);
 	end;
 	
@@ -696,7 +716,7 @@ function GetSimpleDiffNumberBall( cur_steps )
 	elseif style=='StepsType_Pump_Single' then return (0);
 	elseif style=='StepsType_Pump_Routine' or (style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then return (6);
 	elseif ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"DP" ) ) or style=='StepsType_Pump_Couple' then return(3);
-	elseif (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then return (5);
+	elseif style=='StepsType_Pump_Halfdouble' then return (1);
 	elseif style=='StepsType_Pump_Double' then return (1);
 	end;
 	
@@ -745,7 +765,7 @@ function Actor:SetLevelTextByDigit( cur_steps, digit )
 			end;
 		end;
 	elseif ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"DP" ) ) or style=='StepsType_Pump_Couple' then row = 5;
-	elseif (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then row = 1;
+	elseif style=='StepsType_Pump_Halfdouble' then row = 1;
 	elseif style=='StepsType_Pump_Double' then row = 1;
 	end
 	self:setstate( column + row*13 );
@@ -757,16 +777,16 @@ local function GetBallLabel( cur_steps )
 end;
 
 -- Obtiene la etiqueta inferior para mostrar en la esfera
---local function GetBallUnderLabel( cur_steps )
---	local style = cur_steps:GetStepsType();
---	local description = cur_steps:GetDescription();
---	
---	if (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then return 0;
---	elseif (style=='StepsType_Pump_Couple') then return 1;
---	end;
---	
---	return 2; --empty
---end;
+local function GetBallUnderLabel( cur_steps )
+	local style = cur_steps:GetStepsType();
+	local description = cur_steps:GetDescription();
+		
+		if (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then return 0;
+		elseif (style=='StepsType_Pump_Couple') then return 1;
+		end;
+		
+		return 2; --empty
+end;
 
 -- Funci�n para obtener la esfera de nivel
 function GetBallLevel( pn, show_dir_arrows )
@@ -795,7 +815,7 @@ function GetBallLevel( pn, show_dir_arrows )
 			
 			-- Actualizo etiquetas
 			(cmd(stoptweening;diffusealpha,1;sleep,.03;setstate,GetBallLabel(cur_steps)))( this.Label );
---			(cmd(stoptweening;diffusealpha,1;sleep,.03;setstate,GetBallUnderLabel(cur_steps)))( this.Underlabel );
+			(cmd(stoptweening;diffusealpha,1;sleep,.03;setstate,GetBallUnderLabel(cur_steps)))( this.Underlabel );
 		end;
 		children = {
 			-- Frame --
@@ -870,11 +890,11 @@ function GetBallLevel( pn, show_dir_arrows )
 			};
 			
 			-- Under labels --
---			LoadActor( THEME:GetPathG("","Common Resources/B_UNDERLABELS 1x3.png") )..{
---				Name="Underlabel";
---				InitCommand=cmd(visible,show_labels;y,40;pause;setstate,2);
+			LoadActor( THEME:GetPathG("","Common Resources/B_UNDERLABELS 1x3.png") )..{
+				Name="Underlabel";
+				InitCommand=cmd(y,40;pause;setstate,2);
 				--OffCommand=cmd(stoptweening;diffusealpha,1;sleep,.2;linear,.05;diffusealpha,0);
---			};
+			};
 			
 			-- Right Arrow --
 			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_BigBalls arrow.png") )..{

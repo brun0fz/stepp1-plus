@@ -82,48 +82,6 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	local profilename = profile:GetDisplayName();
 	if profilename == "" then profilename = "GUEST P1" end;
 	
-	--P1 Score Frame--
-	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSystemLayer/PlayerName background empty") )..{
-		InitCommand=cmd(horizalign,left;x,SCREEN_LEFT;y,SCREEN_BOTTOM-18;basezoom,.54);
-	};
-
-	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,right;zoom,.51;maxwidth,82;x,SCREEN_LEFT+105;y,SCREEN_BOTTOM-23);
-	};
-	
-	local maxcomboP1 = 0; 
-	local pscoreP1 = 0;
-	t[#t+1] = LoadFont("_karnivore lite white") .. {
-		InitCommand=cmd(settext,"000.000";horizalign,left;zoom,.62;x,SCREEN_LEFT+5;y,SCREEN_BOTTOM-16,maxwidth,85);
-		JudgmentMessageCommand=function(self,param)
-			local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1);
-			local perfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
-			local greats = curstats:GetTapNoteScores('TapNoteScore_W3');
-			local goods = curstats:GetTapNoteScores('TapNoteScore_W4');
-			local bads = curstats:GetTapNoteScores('TapNoteScore_W5');
-			local misses = curstats:GetTapNoteScores('TapNoteScore_Miss') + curstats:GetTapNoteScores('TapNoteScore_CheckpointMiss');
-			local currentcombo = curstats:GetCurrentCombo();
-			if currentcombo > maxcomboP1 then maxcomboP1 = currentcombo end;
-			local stagebreak = curstats:GetReachedLifeZero();
-			pscoreP1 = CalcPScore(perfects, greats, goods, bads, misses, maxcomboP1);
-			local formatted_pscoreP1 = AddDots(pscoreP1);
-			if pscoreP1 < 10 then
-				formatted_pscoreP1 = "000.00"..formatted_pscoreP1;
-			elseif pscoreP1 < 100 then
-				formatted_pscoreP1 = "000.0"..formatted_pscoreP1;
-			elseif pscoreP1 < 1000 then 
-				formatted_pscoreP1 = "000."..formatted_pscoreP1;
-			elseif pscoreP1 < 10000 then
-				formatted_pscoreP1 = "00"..formatted_pscoreP1;
-			elseif pscoreP1 < 100000 then
-				formatted_pscoreP1 = "0"..formatted_pscoreP1;
-			end
-			self:settext(formatted_pscoreP1);
-			formatted_pscoreP1 = "000.000";
-			pscoreP1 = 0;
-		end;
-	};
-
 	-- P1 Mods Display --
 	local P1mods = GAMESTATE:GetPlayerState(PLAYER_1):GetPlayerOptionsString('ModsLevel_Preferred');
 	local P1speedstring = string.sub(P1mods,1,6);
@@ -155,6 +113,61 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 		InitCommand=cmd(settext,P1mods;horizalign,right;zoom,.32;x,SCREEN_LEFT+105;y,SCREEN_BOTTOM-15;diffuse,color("#00FFFF"));
 	};	
 
+	--P1 Score Frame--
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSystemLayer/PlayerName background empty") )..{
+		InitCommand=cmd(horizalign,left;x,SCREEN_LEFT;y,SCREEN_BOTTOM-18;basezoom,.54);
+	};
+
+	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
+		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,right;zoom,.51;maxwidth,82;x,SCREEN_LEFT+105;y,SCREEN_BOTTOM-23);
+	};
+	
+	local maxcomboP1 = 0; 
+	local pscoreP1 = 0;
+	t[#t+1] = LoadFont("_karnivore lite white") .. {
+		InitCommand=cmd(settext,"000.000";horizalign,left;zoom,.62;x,SCREEN_LEFT+5;y,SCREEN_BOTTOM-16,maxwidth,85);
+		JudgmentMessageCommand=function(self,param)
+			local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1);
+			local perfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
+			local greats = curstats:GetTapNoteScores('TapNoteScore_W3');
+			local goods = curstats:GetTapNoteScores('TapNoteScore_W4');
+			local bads = curstats:GetTapNoteScores('TapNoteScore_W5');
+			local misses = curstats:GetTapNoteScores('TapNoteScore_Miss') + curstats:GetTapNoteScores('TapNoteScore_CheckpointMiss');
+			local currentcombo = curstats:GetCurrentCombo();
+			if currentcombo > maxcomboP1 then maxcomboP1 = currentcombo end;
+			local stagebreak = curstats:GetReachedLifeZero();
+			pscoreP1 = CalcPScore(perfects, greats, goods, bads, misses, maxcomboP1);
+			local grade_bonus = 300000;
+			if misses > 0 then
+				grade_bonus = 0
+			elseif bads > 0 or goods > 0 then
+				grade_bonus = 100000
+			elseif greats > 0 then
+				grade_bonus = 150000
+			end;
+			local pass_bonus = 0;
+			if not stagebreak then pass_bonus = 1000000 end;
+			local proc_score = ( (pscoreP1 + pass_bonus) * 100 ) - grade_bonus;
+			if P1judge == ", VJ" or P1judge == ", XJ" or P1judge == ", UJ" then proc_score = proc_score/1.2 end;
+			curstats:SetScore(proc_score);
+			local formatted_pscoreP1 = AddDots(pscoreP1);
+			if pscoreP1 < 10 then
+				formatted_pscoreP1 = "000.00"..formatted_pscoreP1;
+			elseif pscoreP1 < 100 then
+				formatted_pscoreP1 = "000.0"..formatted_pscoreP1;
+			elseif pscoreP1 < 1000 then 
+				formatted_pscoreP1 = "000."..formatted_pscoreP1;
+			elseif pscoreP1 < 10000 then
+				formatted_pscoreP1 = "00"..formatted_pscoreP1;
+			elseif pscoreP1 < 100000 then
+				formatted_pscoreP1 = "0"..formatted_pscoreP1;
+			end
+			self:settext(formatted_pscoreP1);
+			formatted_pscoreP1 = "000.000";
+			pscoreP1 = 0;
+		end;
+	};
+
 	--P1 Difficulty Ball--
 	t[#t+1] = GetSimpleBallLevel( PLAYER_1 )..{ 
 		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_LEFT+120;playcommand,"ShowUp";y,SCREEN_BOTTOM-18);
@@ -169,50 +182,8 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	local profilename = profile:GetDisplayName();
 	if profilename == "" then profilename = "GUEST P2" end;
 
-	--P2 Score Frame--
-	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSystemLayer/PlayerName background empty") )..{
-		InitCommand=cmd(horizalign,right;x,SCREEN_RIGHT;y,SCREEN_BOTTOM-18;basezoom,.54);
-	};
-
-	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,left;zoom,.51;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM-23);
-	};
-	
-	local maxcomboP2 = 0;
-	local pscoreP2 = 0;
-	t[#t+1] = LoadFont("_karnivore lite white") .. {
-		InitCommand=cmd(settext,"000.000";horizalign,right;zoom,.62;x,SCREEN_RIGHT-5;y,SCREEN_BOTTOM-16;maxwidth,85);
-		JudgmentMessageCommand=function(self,param)
-			local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2);
-			local perfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
-			local greats = curstats:GetTapNoteScores('TapNoteScore_W3');
-			local goods = curstats:GetTapNoteScores('TapNoteScore_W4');
-			local bads = curstats:GetTapNoteScores('TapNoteScore_W5');
-			local misses = curstats:GetTapNoteScores('TapNoteScore_Miss') + curstats:GetTapNoteScores('TapNoteScore_CheckpointMiss');
-			local currentcombo = curstats:GetCurrentCombo();
-			if currentcombo > maxcomboP2 then maxcomboP2 = currentcombo end;
-			local stagebreak = curstats:GetReachedLifeZero();
-			pscoreP2 = CalcPScore(perfects,greats,goods,bads,misses,maxcomboP2);
-			local formatted_pscoreP2 = AddDots(pscoreP2);
-			if pscoreP2 < 10 then
-				formatted_pscoreP2 = "000.00"..formatted_pscoreP2;
-			elseif pscoreP2 < 100 then
-				formatted_pscoreP2 = "000.0"..formatted_pscoreP2;
-			elseif pscoreP2 < 1000 then 
-				formatted_pscoreP2 = "000."..formatted_pscoreP2;
-			elseif pscoreP2 < 10000 then
-				formatted_pscoreP2 = "00"..formatted_pscoreP2;
-			elseif pscoreP2 < 100000 then
-				formatted_pscoreP2 = "0"..formatted_pscoreP2;
-			end
-			self:settext(formatted_pscoreP2);
-			formatted_pscoreP2 = "000.000";
-			pscoreP2 = 0;
-		end;
-	};
-
 	-- P2 Mods Display --
-	
+		
 	local P2mods = GAMESTATE:GetPlayerState(PLAYER_2):GetPlayerOptionsString('ModsLevel_Preferred');
 	local P2speedstring = string.sub(P2mods,1,6);
 	local P2speed = "1x"
@@ -242,6 +213,64 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
 		InitCommand=cmd(settext,P2mods;horizalign,left;zoom,.32;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM-15;diffuse,color("#00FFFF"));
 	};	
+
+	--P2 Score Frame--
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSystemLayer/PlayerName background empty") )..{
+		InitCommand=cmd(horizalign,right;x,SCREEN_RIGHT;y,SCREEN_BOTTOM-18;basezoom,.54);
+	};
+
+	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
+		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,left;zoom,.51;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM-23);
+	};
+
+	--P2 Real Time Score--
+	
+	local maxcomboP2 = 0;
+	local pscoreP2 = 0;
+	t[#t+1] = LoadFont("_karnivore lite white") .. {
+		InitCommand=cmd(settext,"000.000";horizalign,right;zoom,.62;x,SCREEN_RIGHT-5;y,SCREEN_BOTTOM-16;maxwidth,85);
+		JudgmentMessageCommand=function(self,param)
+			local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2);
+			local perfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
+			local greats = curstats:GetTapNoteScores('TapNoteScore_W3');
+			local goods = curstats:GetTapNoteScores('TapNoteScore_W4');
+			local bads = curstats:GetTapNoteScores('TapNoteScore_W5');
+			local misses = curstats:GetTapNoteScores('TapNoteScore_Miss') + curstats:GetTapNoteScores('TapNoteScore_CheckpointMiss');
+			local currentcombo = curstats:GetCurrentCombo();
+			if currentcombo > maxcomboP2 then maxcomboP2 = currentcombo end;
+			local stagebreak = curstats:GetReachedLifeZero();
+			pscoreP2 = CalcPScore(perfects,greats,goods,bads,misses,maxcomboP2);
+			local grade_bonus = 300000;
+			if misses > 0 then
+				grade_bonus = 0
+			elseif bads > 0 or goods > 0 then
+				grade_bonus = 100000
+			elseif greats > 0 then
+				grade_bonus = 150000
+			end;
+			local pass_bonus = 0;
+			if not stagebreak then pass_bonus = 1000000 end;
+			local proc_score = ( (pscoreP2 + pass_bonus) * 100 ) - grade_bonus;
+			if P2judge == ", VJ" or P2judge == ", XJ" or P2judge == ", UJ" then proc_score = proc_score/1.2 end;
+			curstats:SetScore(proc_score);
+			local formatted_pscoreP2 = AddDots(pscoreP2);
+			if pscoreP2 < 10 then
+				formatted_pscoreP2 = "000.00"..formatted_pscoreP2;
+			elseif pscoreP2 < 100 then
+				formatted_pscoreP2 = "000.0"..formatted_pscoreP2;
+			elseif pscoreP2 < 1000 then 
+				formatted_pscoreP2 = "000."..formatted_pscoreP2;
+			elseif pscoreP2 < 10000 then
+				formatted_pscoreP2 = "00"..formatted_pscoreP2;
+			elseif pscoreP2 < 100000 then
+				formatted_pscoreP2 = "0"..formatted_pscoreP2;
+			end
+			self:settext(formatted_pscoreP2);
+			formatted_pscoreP2 = "000.000";
+			pscoreP2 = 0;
+		end;
+	};
+
 
 	-- P2 Difficulty Ball --
 

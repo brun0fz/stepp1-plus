@@ -45,6 +45,8 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	if not stagebreak and (pscore < 750000) then pgradecolor = "#03CC83"; end;
 	local plate = (stagebreak and "") or CalcPlate(greats,goods,bads,misses);
 	local platecolor = ColorPlate(plate);
+	local displayscore = math.floor(curstats:GetScore()/100);
+	if displayscore > 1000000 then displayscore = displayscore - 1000000 end;
 
 	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos, 	perfects, 'HorizAlign_Left', 2 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos+delta, curstats:GetTapNoteScores('TapNoteScore_W3'), 'HorizAlign_Left', 2.08 )..{InitCommand=cmd(zoom,.84);};
@@ -52,17 +54,23 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos+delta*3, curstats:GetTapNoteScores('TapNoteScore_W5'), 'HorizAlign_Left', 2.24 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos+delta*4, misses, 'HorizAlign_Left', 2.32 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos+delta*5, curstats:MaxCombo(), 'HorizAlign_Left', 2.40 )..{InitCommand=cmd(zoom,.84);};
-	t[#t+1] = DrawRollingNumberP2( WideScale(66, 115), init_pos+delta*6, pscore, 'HorizAlign_Left', 2.48 )..{InitCommand=cmd(zoom,.84);};
-	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos+delta*7, curstats:GetScore(), 'HorizAlign_Left', 2.56 )..{InitCommand=cmd(zoom,.84);};
+	t[#t+1] = DrawRollingNumberP2( WideScale(66, 115), init_pos+delta*6, displayscore, 'HorizAlign_Left', 2.48 )..{InitCommand=cmd(zoom,.84);};
 	--kcal
 	local kcal = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1):GetCaloriesBurned()*0.50;
-	t[#t+1] = DrawRollingNumberP1( WideScale(106, 155), init_pos+delta*8, math.floor( (kcal - math.floor(kcal))*1000 ), 'HorizAlign_Left', 2.64 )..{InitCommand=cmd(zoom,.84);};
-	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos+delta*8, math.floor( kcal ), 'HorizAlign_Left', 2.64 )..{InitCommand=cmd(zoom,.84);};
-	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*8;x,WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.64;diffusealpha,1); };
-	--p. grade
-	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,WideScale(221, 270);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(pgradecolor)); };
+	t[#t+1] = DrawRollingNumberP1( WideScale(106, 155), init_pos+delta*7, math.floor( (kcal - math.floor(kcal))*1000 ), 'HorizAlign_Left', 2.56 )..{InitCommand=cmd(zoom,.84);};
+	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos+delta*7, math.floor( kcal ), 'HorizAlign_Left', 2.56 )..{InitCommand=cmd(zoom,.84);};
+	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*7;x,WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.56;diffusealpha,1); };
 	--plate
-	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,WideScale(221, 270);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(platecolor)); };
+	if plate ~= "" then
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/"..plate..".png") )..{
+		InitCommand=cmd(basezoom,.44;y,init_pos+delta*6;x,WideScale(221, 270));
+		OnCommand=cmd(zoom,1.0;diffusealpha,0;sleep,4.2;linear,.2;zoom,0.66;diffusealpha,1);
+	};
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/"..plate..".png") )..{
+		InitCommand=cmd(basezoom,.44;blend,'BlendMode_Add';y,init_pos+delta*6;x,WideScale(221, 270));
+		OnCommand=cmd(zoom,.33;diffusealpha,0;sleep,4.2;sleep,.2;diffusealpha,1;decelerate,.35;zoom,1.33;diffusealpha,0);
+	};
+	end;
 
 end;
 
@@ -81,6 +89,8 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	if not stagebreak and (pscore < 750000) then pgradecolor = "#03CC83"; end;
 	local plate = (stagebreak and "") or CalcPlate(greats,goods,bads,misses);
 	local platecolor = ColorPlate(plate);
+	local displayscore = math.floor(curstats:GetScore()/100);
+	if displayscore > 1000000 then displayscore = displayscore - 1000000 end;
 	
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos, 	perfects, 'HorizAlign_Right', 2 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta, greats, 'HorizAlign_Right', 2.08 )..{InitCommand=cmd(zoom,.84);};
@@ -88,17 +98,23 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta*3, bads, 'HorizAlign_Right', 2.24 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta*4, misses, 'HorizAlign_Right', 2.32 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta*5, maxcombo, 'HorizAlign_Right', 2.40 )..{InitCommand=cmd(zoom,.84);};
-	t[#t+1] = DrawRollingNumberP2( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta*6, pscore, 'HorizAlign_Right', 2.48 )..{InitCommand=cmd(zoom,.84);};
-	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta*7, curstats:GetScore(), 'HorizAlign_Right', 2.56 )..{InitCommand=cmd(zoom,.84);};
+	t[#t+1] = DrawRollingNumberP2( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta*6, displayscore, 'HorizAlign_Right', 2.48 )..{InitCommand=cmd(zoom,.84);};
 	--kcal
 	local kcal = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2):GetCaloriesBurned()*0.50;
-	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta*8, math.floor( (kcal - math.floor(kcal))*1000 ), 'HorizAlign_Right', 2.64 )..{InitCommand=cmd(zoom,.84);};
-	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(106, 155), init_pos+delta*8, math.floor( kcal ), 'HorizAlign_Right', 2.64 )..{InitCommand=cmd(zoom,.84);};
-	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*8;x,SCREEN_RIGHT-WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.64;diffusealpha,1); };
-	--p. grade
-	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,SCREEN_RIGHT-WideScale(221, 270);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(pgradecolor)); };
+	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta*7, math.floor( (kcal - math.floor(kcal))*1000 ), 'HorizAlign_Right', 2.56 )..{InitCommand=cmd(zoom,.84);};
+	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(106, 155), init_pos+delta*7, math.floor( kcal ), 'HorizAlign_Right', 2.56 )..{InitCommand=cmd(zoom,.84);};
+	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*7;x,SCREEN_RIGHT-WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.56;diffusealpha,1); };
 	--plate
-	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,SCREEN_RIGHT-WideScale(221, 270);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(platecolor)); };
+	if plate ~= "" then
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/"..plate..".png") )..{
+		InitCommand=cmd(basezoom,.44;y,init_pos+delta*6;x,SCREEN_RIGHT-WideScale(221, 270));
+		OnCommand=cmd(zoom,1.0;diffusealpha,0;sleep,4.2;linear,.2;zoom,0.66;diffusealpha,1);
+	};
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/"..plate..".png") )..{
+		InitCommand=cmd(basezoom,.44;blend,'BlendMode_Add';y,init_pos+delta*6;x,SCREEN_RIGHT-WideScale(221, 270));
+		OnCommand=cmd(zoom,.33;diffusealpha,0;sleep,4.2;sleep,.2;diffusealpha,1;decelerate,.35;zoom,1.33;diffusealpha,0);
+	};
+	end;
 
 end;
 

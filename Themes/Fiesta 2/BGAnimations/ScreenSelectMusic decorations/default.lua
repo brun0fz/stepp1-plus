@@ -36,11 +36,11 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/fulllevel_"..PLAYER_2.
 
 if GAMESTATE:IsSideJoined( PLAYER_1 ) then
 	t[#t+1] = GetHighScoresFrame( PLAYER_1, false )..{
-		InitCommand=cmd(x,cx-207;y,SCREEN_BOTTOM-85);
+		InitCommand=cmd(x,cx-270;y,SCREEN_BOTTOM-85);
 	}
-	t[#t+1] = GetPHighScoresFrame( PLAYER_1, false )..{
-		InitCommand=cmd(x,cx-320;y,SCREEN_BOTTOM-85);
-	}
+--	t[#t+1] = GetPHighScoresFrame( PLAYER_1, false )..{
+--		InitCommand=cmd(x,cx-320;y,SCREEN_BOTTOM-85);
+--	}
 
 	t[#t+1] = LoadFont("SongTitle")..{
 		UpdateVisibilityCommand=function(self)
@@ -74,11 +74,11 @@ end;
 
 if GAMESTATE:IsSideJoined( PLAYER_2 ) then
 	t[#t+1] = GetHighScoresFrame( PLAYER_2, false )..{
-		InitCommand=cmd(x,cx+207;y,SCREEN_BOTTOM-85);
+		InitCommand=cmd(x,cx+270;y,SCREEN_BOTTOM-85);
 	}
-	t[#t+1] = GetPHighScoresFrame( PLAYER_2, false )..{
-		InitCommand=cmd(x,cx+320;y,SCREEN_BOTTOM-85);
-	}
+--	t[#t+1] = GetPHighScoresFrame( PLAYER_2, false )..{
+--		InitCommand=cmd(x,cx+320;y,SCREEN_BOTTOM-85);
+--	}
 	t[#t+1] = LoadFont("SongTitle")..{
 		UpdateVisibilityCommand=function(self)
 			local stepartist = GAMESTATE:GetCurrentSteps(PLAYER_2):GetAuthorCredit();
@@ -147,6 +147,9 @@ t[#t+1] = LoadActor("_diffbar_full")..{
 
 --SCORE GRADES
 t[#t+1] = LoadActor("_grades") .. {}
+
+--SCORE PLATES
+t[#t+1] = LoadActor("_plates") .. {}
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

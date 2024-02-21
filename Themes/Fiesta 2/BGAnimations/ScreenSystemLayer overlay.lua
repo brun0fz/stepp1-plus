@@ -235,7 +235,7 @@ t[#t+1] = PlayerName( PLAYER_1 )..{
 					DoubleLevelNum = math.floor(SessionDataTable[P1CurrentProfile]["LeveltimeD"]/SessionDataTable[P1CurrentProfile]["PlaytimeD"]);
 					if DoubleLevelNum > 9 then DoubleLevelString = "D"..DoubleLevelNum else DoubleLevelString = "D0"..DoubleLevelNum end;
 				end;
-				SessionDataText:settext("Lv. "..SingleLevelString.." / "..DoubleLevelString.."   ♫"..SessionDataTable[P1CurrentProfile]["SongsPlayed"].." ("..formattedtimeP1..")   ".."~Lv. "..SingleLevelString.." / "..DoubleLevelString.."   Kcal: "..math.floor(SessionDataTable[P1CurrentProfile]["Kcals"]));
+				SessionDataText:settext("Lv. "..SingleLevelString.." / "..DoubleLevelString.."   ♫"..SessionDataTable[P1CurrentProfile]["SongsPlayed"].." ("..formattedtimeP1..")   ".."   Kcal: "..math.floor(SessionDataTable[P1CurrentProfile]["Kcals"]));
 			else
 				SessionDataText:settext("");
 			end;
@@ -284,6 +284,7 @@ t[#t+1] = PlayerName( PLAYER_1 )..{
 			local style = GAMESTATE:GetCurrentSteps(PLAYER_1):GetStepsType();
 			local meter = GAMESTATE:GetCurrentSteps(PLAYER_1):GetMeter();
 			if style == 'StepsType_Pump_Single' or style == 'StepsType_Pump_Routine' then
+				if meter == 99 then meter = 20 end; --?? rated charts are just weird
 				P1CurrentLevelTimeS = P1CurrentSongTime * meter;
 				P1CurrentLevelTimeD = 0;
 				P1CurrentSongTimeS = P1CurrentSongTime;
@@ -456,6 +457,7 @@ t[#t+1] = PlayerName( PLAYER_2 )..{
 			local style = GAMESTATE:GetCurrentSteps(PLAYER_2):GetStepsType();
 			local meter = GAMESTATE:GetCurrentSteps(PLAYER_2):GetMeter();
 			if style == 'StepsType_Pump_Single' or style == 'StepsType_Pump_Routine' then
+				if meter == 99 then meter = 20 end; --?? rated charts are just weird
 				P2CurrentLevelTimeS = P2CurrentSongTime * meter;
 				P2CurrentLevelTimeD = 0;
 				P2CurrentSongTimeS = P2CurrentSongTime;

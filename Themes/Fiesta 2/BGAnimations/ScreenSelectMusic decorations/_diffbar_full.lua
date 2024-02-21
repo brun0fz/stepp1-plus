@@ -103,7 +103,7 @@ local function GetDiffNum(i)
 	elseif style=='StepsType_Pump_Single' then return 0;
 	elseif style=='StepsType_Pump_Routine' or (not (string.find(description, "RANDOMSONGS")) and style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then return 6;
 	elseif ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"DP" ) ) or style=='StepsType_Pump_Couple' then return 3;
-	elseif style=='StepsType_Pump_Halfdouble' or (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) then return 5;
+	elseif style=='StepsType_Pump_Halfdouble' then return 1;
 	elseif style=='StepsType_Pump_Double' then return 1;
 	end;
 	
@@ -154,6 +154,18 @@ local function GetSmallBallLabel( i )
 end;
 
 local function GetUnderBallLabel( i )
+	if i > numSteps then return 2; end;	--empty
+	local cur_step = aSteps[i];
+
+	local style = cur_step:GetStepsType();
+	local description = cur_step:GetDescription();
+	
+	if ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then
+		return 0;
+	elseif ( style=='StepsType_Pump_Couple' ) then
+		return 1
+	end;
+	
 	return 2;
 end;
 
@@ -182,36 +194,21 @@ function IsNewStepByGroupCondition()
 end;
 ]]--
 
-local GradeLetters = { 
-	["Grade_Tier01"] = "SSS", 
-	["Grade_Tier02"] = "X", 
-	["Grade_Tier03"] = "G", 
-	["Grade_Tier04"] = "A", 
-	["Grade_Tier05"] = "B", 
-	["Grade_Tier06"] = "C", 
-	["Grade_Tier07"] = "D", 
-	["Grade_Tier08"] = "F" 
-}
-
 local function GetPersonalGrade(pn, i)
 	if GAMESTATE:IsSideJoined(pn) and GAMESTATE:HasProfile(pn) and aSteps[i] then
 		local HighScores = PROFILEMAN:GetProfile(pn):GetHighScoreList(GAMESTATE:GetCurrentSong(), aSteps[i]):GetHighScores()
 		if #HighScores ~= 0 then
-			local GradeTier = HighScores[1]:GetGrade()
-			local Grade = (GradeTier == "Grade_Failed" and "F" or GradeLetters[GradeTier])
-			if Grade == "G" and HighScores[1]:GetTapNoteScore('TapNoteScore_W5') > 0 then
-				return "S"
-			elseif Grade == "A" and ( HighScores[1]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[1]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) > 20 then
-				return "A_Red"
-			elseif Grade == "A" and ( HighScores[1]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[1]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) > 10 then
-				return "A"
-			elseif Grade == "A" and ( HighScores[1]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[1]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) > 5 then
-				return "A_Blue"
-			elseif Grade == "A" and ( HighScores[1]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[1]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) <= 5 then
-				return "A_Gold"
-			else
-				return Grade
+			local BestScore = math.floor(HighScores[1]:GetScore()/100);
+			local StagePass = "B_";
+			if BestScore > 2000000 then 
+				return nil 
 			end
+			if BestScore > 1000000 then
+				BestScore = BestScore - 1000000;
+				StagePass = "R_";
+			end;
+			local Grade = CalcPGrade(BestScore);
+			return StagePass..Grade
 		else
 			return nil
 		end
@@ -318,7 +315,7 @@ for i=1,iChartsToShow do
 		UpDateCommand=function(self)
 			local Grade = GetPersonalGrade(PLAYER_1, i)
 			if Grade ~= nil then
-				self:Load(THEME:GetPathG("", "RecordGrades/R_" .. Grade .. " (doubleres).png"))
+				self:Load(THEME:GetPathG("", "RecordGrades/" .. Grade .. " (doubleres).png"))
 			else
 				self:Load(nil)
 			end
@@ -333,7 +330,7 @@ for i=1,iChartsToShow do
 		UpDateCommand=function(self)
 			local Grade = GetPersonalGrade(PLAYER_2, i)
 			if Grade ~= nil then
-				self:Load(THEME:GetPathG("", "RecordGrades/R_" .. Grade .. " (doubleres).png"))
+				self:Load(THEME:GetPathG("", "RecordGrades/" .. Grade .. " (doubleres).png"))
 			else
 				self:Load(nil)
 			end
@@ -341,10 +338,10 @@ for i=1,iChartsToShow do
 	};
 	
 	-- Under Labels --
---	t[#t+1] = LoadActor( THEME:GetPathG("","Common Resources/B_UNDERLABELS 1x3") ).. {
---		InitCommand=cmd(x,Xpos[i];pause;y,19;zoom,.5);
---		UpDateCommand=cmd( setstate,GetUnderBallLabel(i) );
---	};
+	t[#t+1] = LoadActor( THEME:GetPathG("","Common Resources/B_UNDERLABELS 1x3") ).. {
+		InitCommand=cmd(x,Xpos[i];pause;y,19;zoom,.5);
+		UpDateCommand=cmd( setstate,GetUnderBallLabel(i) );
+	};
 	
 end;
 
