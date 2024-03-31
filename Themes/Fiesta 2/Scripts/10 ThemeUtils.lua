@@ -118,7 +118,7 @@ function CalcPScore(perfects, greats, goods, bads, misses, maxcombo)
 	local notestotal = perfects + greats + goods + bads + misses;
 	if notestotal <= 1 then notestotal = 1 end;
 	local weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-	local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
+	local pscore = math.round(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
 	if pscore < 0 then
 		pscore = 0;
 	elseif pscore > 1000000 then
@@ -251,6 +251,57 @@ function ColorPlate(plate)
 	return PlateColor;
 end;
 
+function CalcSkill(perfects,greats,goods,bads,misses,helds,drops,maxcombo,level)
+	local adjusted_drops = drops/10;
+	local adjusted_helds = helds/10;
+	local notestotal = perfects + greats + goods + bads + misses;
+	local adjusted_notestotal = notestotal + adjusted_drops + adjusted_helds;
+	if notestotal <= 1 then notestotal = 1 end;
+	local weightednotes = perfects+adjusted_helds + 0.6*greats + 0.2*goods + 0.1*bads;
+	local accuracy = weightednotes/adjusted_notestotal * 0.995;
+	local combo_bonus = maxcombo/notestotal * 0.005;
+	local score = accuracy + combo_bonus
+	local skill = (score+0.05)*level
+	skill = math.floor(skill*1000)/1000; --reducing to 3 decimals
+	skill = skill*1000 --weightpounds is an intenger actually? not sure
+	return skill;
+end;
+
+function CalcEXP(meter,score)
+	local base_exp = 0
+	if meter > 9 then
+		base_exp = 100 + 5 * (meter-10) * (meter - 9)
+		else
+		base_exp = meter * 10
+	end;
+	local multiplier = (
+			(score >= 199500000 and 1.50)	or 
+			(score >= 199000000 and 1.44)	or 
+			(score >= 198500000 and 1.38)	or
+			(score >= 198000000 and 1.32)	or
+			(score >= 197500000 and 1.26)	or
+			(score >= 197000000 and 1.20)	or 
+			(score >= 196000000 and 1.14)	or 
+			(score >= 195000000 and 1.10)	or
+			(score >= 192500000 and 1.05)	or
+			(score >= 190000000 and 1.00)	or
+			(score >= 182500000 and 0.90)	or
+			(score >= 175000000 and 0.80)	or
+			(score >= 165000000 and 0.70)	or
+			(score >= 155000000 and 0.60)	or
+			(score >= 145000000 and 0.50) 	or
+			0.00
+			);
+	local total_exp = math.floor(base_exp*multiplier)
+	return total_exp
+end;
+
+function CalcPlayerLevel(totalexp)
+	local player_level_raw = 1+(0.15*totalexp^0.5);
+	local player_level_int = math.floor(player_level_raw);
+	local to_next_level = math.floor(100*(player_level_raw - player_level_int));
+  return player_level_int,to_next_level;
+end;
 
 -----------------------------------------------------------------------
 	
@@ -675,11 +726,12 @@ local Labels = {
 	["INFINITY"] = 7,
 	["JUMP"] = 8,
 	["OUCS"] = 9,
-	["NEW"] = 0
+	["NEW"] = 0,
+	["TITLE"] = 10
 };
 
 function GetLabelNumber( label )
-	if label == "" then return 10; end;
+	if label == "" then return 11; end;
 	
 	return Labels[label];
 end;
@@ -773,7 +825,11 @@ end;
 
 -- Obtiene la etiqueta superior para mostrar en la esfera
 local function GetBallLabel( cur_steps )
-	return GetLabelNumber( cur_steps:GetLabel() );
+	if string.find(cur_steps:GetDescription(),"TITLE") then
+		return 10
+	else
+		return GetLabelNumber( cur_steps:GetLabel() );
+	end;
 end;
 
 -- Obtiene la etiqueta inferior para mostrar en la esfera
@@ -788,8 +844,12 @@ local function GetBallUnderLabel( cur_steps )
 		return 2; --empty
 end;
 
+
 -- Funci�n para obtener la esfera de nivel
 function GetBallLevel( pn, show_dir_arrows )
+	local cur_steps = GAMESTATE:GetCurrentSteps(pn);
+	local active_show = 0;
+	local chartstyle = "";
 	local k = Def.ActorFrame {		
 		InitCommand=cmd(basezoom,.67);
 		ShowUpCommand=cmd(playcommand,"Update";playcommand,'ShowUpInternal');
@@ -804,7 +864,10 @@ function GetBallLevel( pn, show_dir_arrows )
 			end;
 		UpdateCommand=function(self)
 			local this = self:GetChildren();
-			local cur_steps = GAMESTATE:GetCurrentSteps(pn);
+			cur_steps = GAMESTATE:GetCurrentSteps(pn);
+			active_show = 0;
+			chartstyle = cur_steps:GetChartStyle();
+			if string.find(chartstyle,"ACTIVE") then active_show = 1 end;
 			
 			-- Actualizo color esfera de nivel
 			(cmd(stoptweening;diffusealpha,1;setstate,GetDiffNumberBall(cur_steps)))( this.Bigballs );
@@ -818,10 +881,25 @@ function GetBallLevel( pn, show_dir_arrows )
 			(cmd(stoptweening;diffusealpha,1;sleep,.03;setstate,GetBallUnderLabel(cur_steps)))( this.Underlabel );
 		end;
 		children = {
+			
 			-- Frame --
 			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_Bigballs frame.png") )..{
 				InitCommand=cmd(pause);
 				UpdateInternalCommand=cmd(stoptweening;diffusealpha,1);
+			};
+
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/bigball_active.png") )..{
+				InitCommand=cmd(diffusealpha,active_show;glowshift;pause);
+				UpdateCommand=function(self,params)
+					self:diffusealpha(active_show);
+					self:glowshift();
+					self:stoptweening();
+				end;
+				UpdateInternalCommand=function(self)
+					self:diffusealpha(active_show);
+					self:glowshift();
+					self:stoptweening();
+				end;
 			};
 			
 			-- Glow Spin --
@@ -883,7 +961,7 @@ function GetBallLevel( pn, show_dir_arrows )
 			};
 			
 			-- Labels --
-			LoadActor( THEME:GetPathG("","Common Resources/B_LABELS 1x11.png") )..{
+			LoadActor( THEME:GetPathG("","Common Resources/B_LABELS 1x12.png") )..{
 				Name="Label";
 				InitCommand=cmd(y,-58;pause;setstate,9);
 				--OffCommand=cmd(stoptweening;diffusealpha,1;sleep,.2;linear,.05;diffusealpha,0);

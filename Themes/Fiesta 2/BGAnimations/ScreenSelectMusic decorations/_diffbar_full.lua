@@ -150,7 +150,11 @@ end;
 --////////////////////////////////////////////////////////
 local function GetSmallBallLabel( i )
 	if i > numSteps then return GetLabelNumber(""); end;	--empty
-	return GetLabelNumber( aSteps[i]:GetLabel() );
+	if string.find(aSteps[i]:GetDescription(),"TITLE") then
+		return 10
+	else
+		return GetLabelNumber( aSteps[i]:GetLabel() );
+	end
 end;
 
 local function GetUnderBallLabel( i )
@@ -167,6 +171,16 @@ local function GetUnderBallLabel( i )
 	end;
 	
 	return 2;
+end;
+
+local function GetActiveBallLabel( i )
+	if i > numSteps then return 0; end;	--empty
+	local cur_step = aSteps[i];
+	local chartstyle = cur_step:GetChartStyle();
+	if string.find(chartstyle,"ACTIVE") then
+		return 1;
+	end;
+	return 0;
 end;
 
 --////////////////////////////////////////////////////////
@@ -238,6 +252,12 @@ end
 
 for i=1,iChartsToShow do
 
+	-- Active Border --
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/active.png") ).. {
+		InitCommand=cmd(x,Xpos[i];diffusealpha,0);
+		UpDateCommand=cmd( diffusealpha,GetActiveBallLabel(i); glowshift );
+	};
+
 	--	Glowing Ring --
 	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/glow_ring") ) .. {
 		InitCommand=cmd(x,Xpos[i];blend,'BlendMode_Add';diffusealpha,.2;playcommand,'Spin');
@@ -300,7 +320,7 @@ for i=1,iChartsToShow do
 	};
 	
 	-- Labels --
-	t[#t+1] = LoadActor( THEME:GetPathG("","Common Resources/B_LABELS 1x11.png") ) .. {
+	t[#t+1] = LoadActor( THEME:GetPathG("","Common Resources/B_LABELS 1x12.png") ) .. {
 		InitCommand=cmd(x,Xpos[i];pause;y,-22;zoom,.55);
 		StartSelectingStepsMessageCommand=cmd(x,Xpos[i];linear,.3;y,-21);
 		GoBackSelectingSongMessageCommand=cmd(x,Xpos[i];linear,.3;y,-22);

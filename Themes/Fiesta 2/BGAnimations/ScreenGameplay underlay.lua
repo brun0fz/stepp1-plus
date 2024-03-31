@@ -29,9 +29,6 @@ end;
 
 local function PlayerName( Player )
 	local t = Def.ActorFrame {
-		LoadActor( THEME:GetPathG("","ScreenSystemLayer/PlayerName background heartless "..Player) )..{
-			Name = "Back1";
-		};
 		LoadFont("","_myriad pro 20px") .. {
 			Name = "Name";
 			InitCommand=cmd(horizalign,left;y,-8;x,-70);
@@ -76,6 +73,7 @@ local function GetPlayerPosition( player )
 	end;
 end;
 
+-- PLAYER 1 --
 if GAMESTATE:IsSideJoined(PLAYER_1) then
 	local P1PosX = GetPlayerPosition( PLAYER_1 );
 	local profile = PROFILEMAN:GetProfile(PLAYER_1);
@@ -109,9 +107,27 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 		P1speed = "AV"..string.sub(P1speedstring, P1speedstart+1,P1speedend-1);
 	end;
 	P1mods = P1speed..P1judge
-	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,P1mods;horizalign,right;zoom,.32;x,SCREEN_LEFT+105;y,SCREEN_BOTTOM-15;diffuse,color("#00FFFF"));
-	};	
+
+	--P1 Avatar--
+	t[#t+1] = Def.Sprite {
+		Name = "Avatar";
+		Texture = THEME:GetPathG("","_avatars/PlayerNumber_P1.png");
+		InitCommand=function(self)
+			if profilename ~= "GUEST P1" then
+				if FILEMAN:GetFileSizeBytes(PROFILEMAN:GetProfileDir("ProfileSlot_Player1").."/avatar.png") > 316 then
+					self:Load(PROFILEMAN:GetProfileDir("ProfileSlot_Player1").."/avatar.png");
+				else
+					local ProfileID = string.sub(PROFILEMAN:GetProfileDir("ProfileSlot_Player1"),-9,-2)
+					self:Load(THEME:GetPathG("","_avatars/"..ProfileID..".png"));
+				end;
+			end;
+			self:horizalign(left);
+			self:x(SCREEN_LEFT+4);
+			self:y(SCREEN_BOTTOM-18);
+			self:SetWidth(21);
+			self:SetHeight(21);
+		end;
+	};
 
 	--P1 Score Frame--
 	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSystemLayer/PlayerName background empty") )..{
@@ -119,13 +135,13 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	};
 
 	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,right;zoom,.51;maxwidth,82;x,SCREEN_LEFT+105;y,SCREEN_BOTTOM-23);
+		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,left;zoom,.51;maxwidth,82;x,SCREEN_LEFT+28;y,SCREEN_BOTTOM-23);
 	};
 	
 	local maxcomboP1 = 0; 
 	local pscoreP1 = 0;
 	t[#t+1] = LoadFont("_karnivore lite white") .. {
-		InitCommand=cmd(settext,"000.000";horizalign,left;zoom,.62;x,SCREEN_LEFT+5;y,SCREEN_BOTTOM-16,maxwidth,85);
+		InitCommand=cmd(settext,"000.000";horizalign,right;zoom,.62;x,SCREEN_LEFT+128;y,SCREEN_BOTTOM-16,maxwidth,85);
 		JudgmentMessageCommand=function(self,param)
 			local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1);
 			local perfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
@@ -168,14 +184,19 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 		end;
 	};
 
+	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
+		InitCommand=cmd(settext,P1mods;horizalign,left;zoom,.32;x,SCREEN_LEFT+28;y,SCREEN_BOTTOM-15;diffuse,color("#00FFFF"));
+	};	
+
 	--P1 Difficulty Ball--
 	t[#t+1] = GetSimpleBallLevel( PLAYER_1 )..{ 
-		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_LEFT+120;playcommand,"ShowUp";y,SCREEN_BOTTOM-18);
+		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_LEFT+145;playcommand,"ShowUp";y,SCREEN_BOTTOM-18);
 	};
 
 end;
 
 
+--PLAYER 2--
 if GAMESTATE:IsSideJoined(PLAYER_2) then
 	local P2PosX = GetPlayerPosition( PLAYER_2 );
 	local profile = PROFILEMAN:GetProfile(PLAYER_2);
@@ -210,9 +231,28 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 		P2speed = "AV"..string.sub(P2speedstring, P2speedstart+1,P2speedend-1);
 	end;
 	P2mods = P2speed..P2judge
-	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,P2mods;horizalign,left;zoom,.32;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM-15;diffuse,color("#00FFFF"));
-	};	
+
+	-- P2 Avatar--
+	t[#t+1] = Def.Sprite {
+		Name = "Avatar";
+		Texture = THEME:GetPathG("","_avatars/PlayerNumber_P2.png");
+		InitCommand=function(self)
+			if profilename ~= "GUEST P2" then
+				if FILEMAN:GetFileSizeBytes(PROFILEMAN:GetProfileDir("ProfileSlot_Player2").."/avatar.png") > 316 then
+					self:Load(PROFILEMAN:GetProfileDir("ProfileSlot_Player2").."/avatar.png");
+				else
+					local ProfileID = string.sub(PROFILEMAN:GetProfileDir("ProfileSlot_Player2"),-9,-2)
+					self:Load(THEME:GetPathG("","_avatars/"..ProfileID..".png"));
+				end;
+			end;
+			self:horizalign(right);
+			self:basezoom(.54);
+			self:SetWidth(38);
+			self:SetHeight(38);
+			self:x(SCREEN_RIGHT-108);
+			self:y(SCREEN_BOTTOM-18);
+		end;
+	};
 
 	--P2 Score Frame--
 	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSystemLayer/PlayerName background empty") )..{
@@ -271,11 +311,15 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 		end;
 	};
 
+	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
+		InitCommand=cmd(settext,P2mods;horizalign,left;zoom,.32;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM-15;diffuse,color("#00FFFF"));
+	};	
+
 
 	-- P2 Difficulty Ball --
 
 	t[#t+1] = GetSimpleBallLevel( PLAYER_2 )..{ 
-		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_RIGHT-120;playcommand,"ShowUp";y,SCREEN_BOTTOM-18);
+		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_RIGHT-144;playcommand,"ShowUp";y,SCREEN_BOTTOM-18);
 	};
 
 end;

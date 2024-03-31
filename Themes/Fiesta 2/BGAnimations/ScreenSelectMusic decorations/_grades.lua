@@ -158,7 +158,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="PersonalP1",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X - 235, SCREEN_CENTER_Y + 143)
+			self:xy(SCREEN_CENTER_X - 235, SCREEN_CENTER_Y + 123)
 			self:zoom(0.37)
 		end
 	},
@@ -166,7 +166,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="PersonalP1Mods",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X - 205, SCREEN_CENTER_Y + 138)
+			self:xy(SCREEN_CENTER_X - 205, SCREEN_CENTER_Y + 118)
 			self:zoom(0.37)
 		end
 	},
@@ -174,7 +174,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="MachineP1",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X - 235, SCREEN_CENTER_Y + 178)
+			self:xy(SCREEN_CENTER_X - 235, SCREEN_CENTER_Y + 158)
 			self:zoom(0.37)
 		end
 	},
@@ -182,7 +182,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="MachineP1Mods",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X - 205, SCREEN_CENTER_Y + 168)
+			self:xy(SCREEN_CENTER_X - 205, SCREEN_CENTER_Y + 148)
 			self:zoom(0.37)
 		end
 	},
@@ -190,7 +190,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="PersonalP2",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X + 305, SCREEN_CENTER_Y + 143)
+			self:xy(SCREEN_CENTER_X + 305, SCREEN_CENTER_Y + 123)
 			self:zoom(0.37)
 		end
 	},
@@ -198,7 +198,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="PersonalP2Mods",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X + 335, SCREEN_CENTER_Y + 138)
+			self:xy(SCREEN_CENTER_X + 335, SCREEN_CENTER_Y + 118)
 			self:zoom(0.37)
 		end
 	},
@@ -206,7 +206,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="MachineP2",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X + 305, SCREEN_CENTER_Y + 178)
+			self:xy(SCREEN_CENTER_X + 305, SCREEN_CENTER_Y + 158)
 			self:zoom(0.37)
 		end
 	},
@@ -214,7 +214,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="MachineP2Mods",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X + 335, SCREEN_CENTER_Y + 168)
+			self:xy(SCREEN_CENTER_X + 335, SCREEN_CENTER_Y + 148)
 			self:zoom(0.37)
 		end
 	}

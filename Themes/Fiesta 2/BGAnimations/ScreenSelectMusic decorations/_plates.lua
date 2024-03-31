@@ -92,7 +92,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="PersonalP1",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X - 235, SCREEN_CENTER_Y + 133)
+			self:xy(SCREEN_CENTER_X - 235, SCREEN_CENTER_Y + 113)
 			self:zoom(0.37)
 		end
 	},
@@ -100,7 +100,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="MachineP1",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X - 235, SCREEN_CENTER_Y + 168)
+			self:xy(SCREEN_CENTER_X - 235, SCREEN_CENTER_Y + 148)
 			self:zoom(0.37)
 		end
 	},
@@ -108,7 +108,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="PersonalP2",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X + 305, SCREEN_CENTER_Y + 133)
+			self:xy(SCREEN_CENTER_X + 305, SCREEN_CENTER_Y + 113)
 			self:zoom(0.37)
 		end
 	},
@@ -116,7 +116,7 @@ local t = Def.ActorFrame {
 	Def.Sprite {
 		Name="MachineP2",
 		InitCommand=function(self)
-			self:xy(SCREEN_CENTER_X + 305, SCREEN_CENTER_Y + 168)
+			self:xy(SCREEN_CENTER_X + 305, SCREEN_CENTER_Y + 148)
 			self:zoom(0.37)
 		end
 	}

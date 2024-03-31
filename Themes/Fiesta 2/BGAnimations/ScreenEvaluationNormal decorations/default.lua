@@ -236,10 +236,13 @@ local cur_song = GAMESTATE:GetCurrentSong();
 local cur_steps = GAMESTATE:GetCurrentSteps( pn );
 
 if GAMESTATE:HasProfile( pn ) then
-	local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();		
+	local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
+	local CurrentHighScore = 0;
+	local LastHighScore = 0;
 	if HSList ~= nil and #HSList ~= 0 then
 		local OldHS = 0;
 		local NewHS = math.floor(HSList[1]:GetScore()/100);
+		CurrentHighScore = HSList[1]:GetScore()
 		if NewHS > 2000000 then 
 			NewHS = 0;
 		elseif NewHS > 1000000 then 
@@ -247,6 +250,7 @@ if GAMESTATE:HasProfile( pn ) then
 		end;
 		if #HSList > 1 then
 			OldHS = math.floor(HSList[2]:GetScore()/100);
+			LastHighScore = HSList[2]:GetScore()
 			if OldHS > 2000000 then 
 				OldHS = 0;
 			elseif OldHS > 1000000 then 
@@ -268,6 +272,15 @@ if GAMESTATE:HasProfile( pn ) then
 			OnCommand=function(self)
 				if SCREENMAN:GetTopScreen():PlayerHasNewRecord(pn) then
 					self:visible(false);
+					local processed_meter = GAMESTATE:GetCurrentSteps(pn):GetMeter();
+					if processed_meter == 99 and string.find(cur_steps:GetDescription(),"DP COOP") then processed_meter = 29 elseif processed_meter == 99 then processed_meter = 15 elseif processed_meter > 28 then processed_meter = 28 elseif processed_meter < 1 then processed_meter = 1 end;
+					local exp_divisor = 1;
+					local chartstyle = cur_steps:GetChartStyle();
+					if not string.find(chartstyle,"ACTIVE") then exp_divisor = 5 end;
+					local Total_EXP = PROFILEMAN:GetProfile( pn ):GetVoomax();
+					Total_EXP = Total_EXP - math.round(CalcEXP(processed_meter,LastHighScore)/exp_divisor) + math.round(CalcEXP(processed_meter,CurrentHighScore)/exp_divisor);
+					PROFILEMAN:GetProfile( pn ):SetVoomax(Total_EXP);
+					PROFILEMAN:SaveProfile(pn);
 				end;
 			end;
 			OffCommand=cmd(stoptweening;visible,false);
@@ -560,7 +573,7 @@ function GetPHighScoresFrameEval( pn )
 
 -- High scores & Level Ball & Autoplay text
 if GAMESTATE:IsSideJoined( PLAYER_1 ) then
-t[#t+1] = GetHighScoresFrameEval( PLAYER_1 )..{ InitCommand=cmd(x,cx-270;y,SCREEN_BOTTOM-85); };
+t[#t+1] = GetHighScoresFrameEval( PLAYER_1 )..{ InitCommand=cmd(x,cx-270;y,SCREEN_BOTTOM-105); };
 
 --t[#t+1] = GetPHighScoresFrameEval( PLAYER_1 )..{ InitCommand=cmd(x,cx-320;y,SCREEN_BOTTOM-85); };
 
@@ -573,7 +586,7 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/hs_glow_player.png") )
 			self:queuecommand("Effect");
 		end;
 	end;
-	EffectCommand=cmd(x,cx-270;y,SCREEN_BOTTOM-102;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
+	EffectCommand=cmd(x,cx-270;y,SCREEN_BOTTOM-122;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
 	OffCommand=cmd(finishtweening;visible,false);
 };
 
@@ -586,7 +599,7 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/hs_glow_machine.png") 
 			self:queuecommand("Effect");
 		end;
 	end;
-	EffectCommand=cmd(x,cx-270;y,SCREEN_BOTTOM-72;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
+	EffectCommand=cmd(x,cx-270;y,SCREEN_BOTTOM-92;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
 	OffCommand=cmd(finishtweening;visible,false);
 };
 
@@ -622,7 +635,7 @@ end;
 end;
 
 if GAMESTATE:IsSideJoined( PLAYER_2 ) then
-t[#t+1] = GetHighScoresFrameEval( PLAYER_2 )..{ InitCommand=cmd(x,cx+270;y,SCREEN_BOTTOM-85); };
+t[#t+1] = GetHighScoresFrameEval( PLAYER_2 )..{ InitCommand=cmd(x,cx+270;y,SCREEN_BOTTOM-105); };
 
 --t[#t+1] = GetPHighScoresFrameEval( PLAYER_2 )..{ InitCommand=cmd(x,cx+320;y,SCREEN_BOTTOM-85); };
 
@@ -635,7 +648,7 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/hs_glow_player.png") )
 			self:queuecommand("Effect");
 		end;
 	end;
-	EffectCommand=cmd(x,cx+270;y,SCREEN_BOTTOM-102;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
+	EffectCommand=cmd(x,cx+270;y,SCREEN_BOTTOM-122;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
 	OffCommand=cmd(finishtweening;visible,false);
 };
 t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/hs_glow_machine.png") )..{
@@ -647,7 +660,7 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/hs_glow_machine.png") 
 			self:queuecommand("Effect");
 		end;
 	end;
-	EffectCommand=cmd(x,cx+270;y,SCREEN_BOTTOM-72;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
+	EffectCommand=cmd(x,cx+270;y,SCREEN_BOTTOM-92;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
 	OffCommand=cmd(finishtweening;visible,false);
 };
 t[#t+1] = GetBallLevel( PLAYER_2, false )..{ 
