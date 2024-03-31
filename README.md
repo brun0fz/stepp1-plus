@@ -6,8 +6,10 @@ Modified version of StepP1 1.0.3 (5-panel focused StepMania fork), originally de
 - The stepp1-plus-main folder can be stored on your location of choice. It is a portable installation and will not write files to anywhere else.
 - Do not install over a previous StepP1 installation. If you want to, move or copy your SongMovies, RandomMovies and Songs folders from other installations to the main stepp1-plus folder.
 - To install songs, simfiles and background animations, follow the usual Stepmania standards. Read the provided Manual on https://github.com/rayden-61/stepp1-plus/blob/main/Documentation/Manual_EN.pdf (english) or https://github.com/rayden-61/stepp1-plus/blob/main/Documentation/Manual_EN.pdf (spanish)
-- Save files are compatible with stepp1-plus, and the game will automatically try to convert your old scores using the P.Score formula. We recommend migrating saves as they'll help populate the song duration metric for each song.
+- Do not use save files from other builds.
 - We do not recommend migrating and old Save/PreferenceP1.ini file. Use the provided default PreferenceP1 and change your settings in-game (press Scroll Lock to access the in-game settings menu).
+- We recommend this songpack, which has features tailored to this build: https://drive.google.com/drive/folders/1S1kLTRQoj3WptFkbg24__KqHJ1m13yhc (further updates for .ssc files can be acquired here: https://github.com/rayden-61/PIU-Simfiles)
+- To change your in-game avatar, first create a profile and drop any square aspect ratio image file named "avatar.png" on your profile folder (example: stepp1-plus/save/localprofiles/00000001/avatar.png)
 
 ## Changes, Features and Known issues
 Check out https://github.com/rayden-61/stepp1-plus/blob/main/CHANGELOG.txt
