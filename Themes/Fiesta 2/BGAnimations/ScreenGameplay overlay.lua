@@ -133,6 +133,11 @@ if( GAMESTATE:IsSideJoined(PLAYER_1) or GAMESTATE:IsDemonstration() ) then
 			};
 		};
 		JudgmentMessageCommand=function(self,param)
+			self:sleep(0.1);
+			self:queuecommand('PostLifeChange');
+		end;
+
+		PostLifeChangeMessageCommand=function(self)
 			if StageBreak ~= true then
 				local timeline = self:GetChild("Timeline");
 				local shattersound = self:GetChild("ShatterSound");
@@ -232,6 +237,11 @@ if( GAMESTATE:IsSideJoined(PLAYER_2) or GAMESTATE:IsDemonstration() ) then
 			};
 		};
 		JudgmentMessageCommand=function(self,param)
+			self:sleep(0.1);
+			self:queuecommand('PostLifeChange');
+		end;
+
+		PostLifeChangeMessageCommand=function(self)
 			if StageBreak ~= true then
 				local timeline = self:GetChild("Timeline");
 				local shattersound = self:GetChild("ShatterSound");

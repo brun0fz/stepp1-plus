@@ -143,6 +143,10 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	t[#t+1] = LoadFont("_karnivore lite white") .. {
 		InitCommand=cmd(settext,"000.000";horizalign,right;zoom,.62;x,SCREEN_LEFT+128;y,SCREEN_BOTTOM-16,maxwidth,85);
 		JudgmentMessageCommand=function(self,param)
+			self:sleep(0.1);
+			self:queuecommand('PostLifeChange');
+		end;
+		PostLifeChangeMessageCommand=function(self)
 			local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1);
 			local perfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
 			local greats = curstats:GetTapNoteScores('TapNoteScore_W3');
@@ -270,6 +274,10 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	t[#t+1] = LoadFont("_karnivore lite white") .. {
 		InitCommand=cmd(settext,"000.000";horizalign,right;zoom,.62;x,SCREEN_RIGHT-5;y,SCREEN_BOTTOM-16;maxwidth,85);
 		JudgmentMessageCommand=function(self,param)
+			self:sleep(0.1);
+			self:queuecommand('PostLifeChange');
+		end;
+		PostLifeChangeMessageCommand=function(self)
 			local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2);
 			local perfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
 			local greats = curstats:GetTapNoteScores('TapNoteScore_W3');
