@@ -110,7 +110,7 @@ if( GAMESTATE:IsSideJoined(PLAYER_1) or GAMESTATE:IsDemonstration() ) then
 	--P1 Timeline--
 	t[#t+1] = Def.ActorFrame {
 		children = {
-			LoadActor( THEME:GetPathG("","ScreenGameplay/_time_line") ).. {
+			--[[ LoadActor( THEME:GetPathG("","ScreenGameplay/_time_line") ).. {
 				InitCommand=cmd(SetWidth,MeterWidth;x,P1PosX;y,SCREEN_CENTER_Y-204;diffusecolor,color("0,0.8,1,1"));
 				Name="Timeline";		
 			};
@@ -130,14 +130,14 @@ if( GAMESTATE:IsSideJoined(PLAYER_1) or GAMESTATE:IsDemonstration() ) then
 			LoadActor(THEME:GetPathG("","ScreenGameplay/broken.png"))..{
 				InitCommand=cmd(x,((style=='StyleType_OnePlayerTwoSides') or (style=='StyleType_TwoPlayersSharedSides')) and SCREEN_CENTER_X-245 or P1PosX-125;y,SCREEN_CENTER_Y-220;diffusealpha,0;zoom,0.1);
 				Name="ShatterAnimation";
-			};
+			}; ]]
 		};
 		JudgmentMessageCommand=function(self,param)
-			self:sleep(0.1);
+			self:sleep(0.1);--aca
 			self:queuecommand('PostLifeChange');
 		end;
 
-		PostLifeChangeMessageCommand=function(self)
+		PostLifeChangeMessageCommand=function(self)--haca
 			if StageBreak ~= true then
 				local timeline = self:GetChild("Timeline");
 				local shattersound = self:GetChild("ShatterSound");
@@ -214,7 +214,7 @@ if( GAMESTATE:IsSideJoined(PLAYER_2) or GAMESTATE:IsDemonstration() ) then
 	--P2 Timeline--
 	t[#t+1] = Def.ActorFrame {
 		children = {
-			LoadActor( THEME:GetPathG("","ScreenGameplay/_time_line") ).. {
+			--[[ LoadActor( THEME:GetPathG("","ScreenGameplay/_time_line") ).. {
 				InitCommand=cmd(SetWidth,MeterWidth;x,P2PosX;y,SCREEN_CENTER_Y-204;diffusecolor,color("0,0.8,1,1"));
 				Name="Timeline";		
 			};
@@ -234,14 +234,14 @@ if( GAMESTATE:IsSideJoined(PLAYER_2) or GAMESTATE:IsDemonstration() ) then
 			LoadActor(THEME:GetPathG("","ScreenGameplay/broken.png"))..{
 				InitCommand=cmd(x,((style=='StyleType_OnePlayerTwoSides') or (style=='StyleType_TwoPlayersSharedSides')) and SCREEN_CENTER_X-245 or P2PosX+125;y,SCREEN_CENTER_Y-220;diffusealpha,0;zoom,0.1);
 				Name="ShatterAnimation";
-			};
+			}; ]]
 		};
-		JudgmentMessageCommand=function(self,param)
-			self:sleep(0.1);
+		JudgmentMessageCommand=function(self,param)	
+			self:sleep(0.1);--aca
 			self:queuecommand('PostLifeChange');
 		end;
 
-		PostLifeChangeMessageCommand=function(self)
+		PostLifeChangeMessageCommand=function(self)--haca
 			if StageBreak ~= true then
 				local timeline = self:GetChild("Timeline");
 				local shattersound = self:GetChild("ShatterSound");

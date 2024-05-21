@@ -123,7 +123,7 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 			end;
 			self:horizalign(left);
 			self:x(SCREEN_LEFT+4);
-			self:y(SCREEN_BOTTOM-18);
+			self:y(SCREEN_BOTTOM+99);
 			self:SetWidth(21);
 			self:SetHeight(21);
 		end;
@@ -131,22 +131,22 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 
 	--P1 Score Frame--
 	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSystemLayer/PlayerName background empty") )..{
-		InitCommand=cmd(horizalign,left;x,SCREEN_LEFT;y,SCREEN_BOTTOM-18;basezoom,.54);
+		InitCommand=cmd(horizalign,left;x,SCREEN_LEFT;y,SCREEN_BOTTOM+99;basezoom,.54);
 	};
 
 	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,left;zoom,.51;maxwidth,82;x,SCREEN_LEFT+28;y,SCREEN_BOTTOM-23);
+		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,left;zoom,.51;maxwidth,82;x,SCREEN_LEFT+28;y,SCREEN_BOTTOM+99);
 	};
 	
 	local maxcomboP1 = 0; 
 	local pscoreP1 = 0;
 	t[#t+1] = LoadFont("_karnivore lite white") .. {
-		InitCommand=cmd(settext,"000.000";horizalign,right;zoom,.62;x,SCREEN_LEFT+128;y,SCREEN_BOTTOM-16,maxwidth,85);
+		InitCommand=cmd(settext,"000.000";horizalign,right;zoom,.62;x,SCREEN_LEFT+128;y,SCREEN_BOTTOM+99,maxwidth,85);
 		JudgmentMessageCommand=function(self,param)
-			self:sleep(0.1);
+			self:sleep(0.1);--aca
 			self:queuecommand('PostLifeChange');
 		end;
-		PostLifeChangeMessageCommand=function(self)
+		PostLifeChangeMessageCommand=function(self)--haca
 			local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1);
 			local perfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
 			local greats = curstats:GetTapNoteScores('TapNoteScore_W3');
@@ -189,12 +189,12 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	};
 
 	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,P1mods;horizalign,left;zoom,.32;x,SCREEN_LEFT+28;y,SCREEN_BOTTOM-15;diffuse,color("#00FFFF"));
+		InitCommand=cmd(settext,P1mods;horizalign,left;zoom,.32;x,SCREEN_LEFT+28;y,SCREEN_BOTTOM+99;diffuse,color("#00FFFF"));
 	};	
 
 	--P1 Difficulty Ball--
 	t[#t+1] = GetSimpleBallLevel( PLAYER_1 )..{ 
-		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_LEFT+145;playcommand,"ShowUp";y,SCREEN_BOTTOM-18);
+		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_LEFT+145;playcommand,"ShowUp";y,SCREEN_BOTTOM+99);
 	};
 
 end;
@@ -254,17 +254,17 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 			self:SetWidth(38);
 			self:SetHeight(38);
 			self:x(SCREEN_RIGHT-108);
-			self:y(SCREEN_BOTTOM-18);
+			self:y(SCREEN_BOTTOM+99);
 		end;
 	};
 
 	--P2 Score Frame--
 	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSystemLayer/PlayerName background empty") )..{
-		InitCommand=cmd(horizalign,right;x,SCREEN_RIGHT;y,SCREEN_BOTTOM-18;basezoom,.54);
+		InitCommand=cmd(horizalign,right;x,SCREEN_RIGHT;y,SCREEN_BOTTOM+99;basezoom,.54);
 	};
 
 	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,left;zoom,.51;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM-23);
+		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,left;zoom,.51;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM+99);
 	};
 
 	--P2 Real Time Score--
@@ -272,12 +272,12 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	local maxcomboP2 = 0;
 	local pscoreP2 = 0;
 	t[#t+1] = LoadFont("_karnivore lite white") .. {
-		InitCommand=cmd(settext,"000.000";horizalign,right;zoom,.62;x,SCREEN_RIGHT-5;y,SCREEN_BOTTOM-16;maxwidth,85);
+		InitCommand=cmd(settext,"000.000";horizalign,right;zoom,.62;x,SCREEN_RIGHT-5;y,SCREEN_BOTTOM+99;maxwidth,85);
 		JudgmentMessageCommand=function(self,param)
-			self:sleep(0.1);
+			self:sleep(0.1);--aca
 			self:queuecommand('PostLifeChange');
 		end;
-		PostLifeChangeMessageCommand=function(self)
+		PostLifeChangeMessageCommand=function(self)--haca
 			local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2);
 			local perfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
 			local greats = curstats:GetTapNoteScores('TapNoteScore_W3');
@@ -320,14 +320,14 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	};
 
 	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,P2mods;horizalign,left;zoom,.32;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM-15;diffuse,color("#00FFFF"));
+		InitCommand=cmd(settext,P2mods;horizalign,left;zoom,.32;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM+99;diffuse,color("#00FFFF"));
 	};	
 
 
 	-- P2 Difficulty Ball --
 
 	t[#t+1] = GetSimpleBallLevel( PLAYER_2 )..{ 
-		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_RIGHT-144;playcommand,"ShowUp";y,SCREEN_BOTTOM-18);
+		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_RIGHT-144;playcommand,"ShowUp";y,SCREEN_BOTTOM+99);
 	};
 
 end;
@@ -341,7 +341,7 @@ t[#t+1] = Def.BitmapText {
 	Font="hdkarnivore 24px",
 	Text="♫"..songtitle,
 	InitCommand=function(self)
-		self:y(SCREEN_BOTTOM-9);
+		self:y(SCREEN_BOTTOM+99);
 		self:x(SCREEN_CENTER_X);
 		self:zoom(.64);
 		self:maxwidth(440);
@@ -349,4 +349,16 @@ t[#t+1] = Def.BitmapText {
 	end;
 };
 
+t[#t+1] = LoadActor( THEME:GetPathG("","ScreenGameplay/freeplay") )..{ 
+	InitCommand=function(self)
+		self:x(SCREEN_CENTER_X);
+		self:y(SCREEN_CENTER_Y+230);
+		self:zoom(0.45);
+	end;
+
+	aliveCommand=function(self)
+
+	end;
+};
+-- brunofz toda la verga de abajo --
 return t;
