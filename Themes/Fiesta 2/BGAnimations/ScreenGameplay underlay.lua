@@ -123,30 +123,43 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 			end;
 			self:horizalign(left);
 			self:x(SCREEN_LEFT+4);
-			self:y(SCREEN_BOTTOM+99);
+			self:y(SCREEN_BOTTOM-18);
 			self:SetWidth(21);
 			self:SetHeight(21);
 		end;
 	};
 
 	--P1 Score Frame--
+	local PersonalBest = 0;
+	local cur_song = GAMESTATE:GetCurrentSong();
+	local cur_steps = GAMESTATE:GetCurrentSteps(PLAYER_1);
+	local HSList = PROFILEMAN:GetProfile(PLAYER_1):GetHighScoreList(cur_song,cur_steps):GetHighScores();
+	if HSList ~= nil and #HSList ~= 0 then
+		PersonalBest = math.floor(HSList[1]:GetScore()/100);
+		if PersonalBest > 2000000 then 
+			PersonalBest = 0;
+		elseif PersonalBest > 1000000 then 
+			PersonalBest = PersonalBest - 1000000;
+		end;
+	end;
+
 	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSystemLayer/PlayerName background empty") )..{
-		InitCommand=cmd(horizalign,left;x,SCREEN_LEFT;y,SCREEN_BOTTOM+99;basezoom,.54);
+		InitCommand=cmd(horizalign,left;x,SCREEN_LEFT;y,SCREEN_BOTTOM-18;basezoom,.54);
 	};
 
 	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,left;zoom,.51;maxwidth,82;x,SCREEN_LEFT+28;y,SCREEN_BOTTOM+99);
+		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,left;zoom,.51;maxwidth,82;x,SCREEN_LEFT+28;y,SCREEN_BOTTOM-23);
 	};
 	
 	local maxcomboP1 = 0; 
 	local pscoreP1 = 0;
 	t[#t+1] = LoadFont("_karnivore lite white") .. {
-		InitCommand=cmd(settext,"000.000";horizalign,right;zoom,.62;x,SCREEN_LEFT+128;y,SCREEN_BOTTOM+99,maxwidth,85);
+		InitCommand=cmd(settext,"00.00%";horizalign,right;zoom,.62;x,SCREEN_LEFT+128;y,SCREEN_BOTTOM-16,maxwidth,85);
 		JudgmentMessageCommand=function(self,param)
-			self:sleep(0.1);--aca
+			self:sleep(0.1);
 			self:queuecommand('PostLifeChange');
 		end;
-		PostLifeChangeMessageCommand=function(self)--haca
+		PostLifeChangeMessageCommand=function(self)
 			local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1);
 			local perfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
 			local greats = curstats:GetTapNoteScores('TapNoteScore_W3');
@@ -170,31 +183,40 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 			local proc_score = ( (pscoreP1 + pass_bonus) * 100 ) - grade_bonus;
 			if P1judge == ", VJ" or P1judge == ", XJ" or P1judge == ", UJ" then proc_score = proc_score/1.2 end;
 			curstats:SetScore(proc_score);
-			local formatted_pscoreP1 = AddDots(pscoreP1);
-			if pscoreP1 < 10 then
-				formatted_pscoreP1 = "000.00"..formatted_pscoreP1;
-			elseif pscoreP1 < 100 then
-				formatted_pscoreP1 = "000.0"..formatted_pscoreP1;
-			elseif pscoreP1 < 1000 then 
-				formatted_pscoreP1 = "000."..formatted_pscoreP1;
-			elseif pscoreP1 < 10000 then
-				formatted_pscoreP1 = "00"..formatted_pscoreP1;
-			elseif pscoreP1 < 100000 then
-				formatted_pscoreP1 = "0"..formatted_pscoreP1;
-			end
+			local formatted_pscoreP1 = ScoreToPercent(pscoreP1);
+			if pscoreP1 > PersonalBest then
+				self:diffusecolor(color("#00FFFF"))
+			else
+				self:diffusecolor(1,1,1,1)
+			end;
 			self:settext(formatted_pscoreP1);
-			formatted_pscoreP1 = "000.000";
-			pscoreP1 = 0;
+		end;
+	};
+
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenGameplay/new_record") )..{
+		InitCommand=cmd(horizalign,right;zoom,.22;x,SCREEN_LEFT+80;y,SCREEN_BOTTOM-15,maxwidth,85;visible,false);
+		JudgmentMessageCommand=function(self,param)
+			self:sleep(0.1);
+			self:queuecommand('PostLifeChange');
+		end;
+		PostLifeChangeMessageCommand=function(self)
+			if pscoreP1 >= 1000000 then self:x(SCREEN_LEFT+80) else self:x(SCREEN_LEFT+85) end;
+			if pscoreP1 > PersonalBest then
+				self:visible(true)
+				self:glowshift()
+			else
+				self:visible(false)
+			end;
 		end;
 	};
 
 	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,P1mods;horizalign,left;zoom,.32;x,SCREEN_LEFT+28;y,SCREEN_BOTTOM+99;diffuse,color("#00FFFF"));
+		InitCommand=cmd(settext,P1mods;horizalign,left;zoom,.32;x,SCREEN_LEFT+28;y,SCREEN_BOTTOM-15;diffuse,color("#00FFFF"));
 	};	
 
 	--P1 Difficulty Ball--
 	t[#t+1] = GetSimpleBallLevel( PLAYER_1 )..{ 
-		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_LEFT+145;playcommand,"ShowUp";y,SCREEN_BOTTOM+99);
+		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_LEFT+145;playcommand,"ShowUp";y,SCREEN_BOTTOM-18);
 	};
 
 end;
@@ -254,17 +276,30 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 			self:SetWidth(38);
 			self:SetHeight(38);
 			self:x(SCREEN_RIGHT-108);
-			self:y(SCREEN_BOTTOM+99);
+			self:y(SCREEN_BOTTOM-18);
 		end;
 	};
 
 	--P2 Score Frame--
+	local PersonalBest = 0;
+	local cur_song = GAMESTATE:GetCurrentSong();
+	local cur_steps = GAMESTATE:GetCurrentSteps(PLAYER_2);
+	local HSList = PROFILEMAN:GetProfile(PLAYER_2):GetHighScoreList(cur_song,cur_steps):GetHighScores();
+	if HSList ~= nil and #HSList ~= 0 then
+		PersonalBest = math.floor(HSList[1]:GetScore()/100);
+		if PersonalBest > 2000000 then 
+			PersonalBest = 0;
+		elseif PersonalBest > 1000000 then 
+			PersonalBest = PersonalBest - 1000000;
+		end;
+	end;
+
 	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSystemLayer/PlayerName background empty") )..{
-		InitCommand=cmd(horizalign,right;x,SCREEN_RIGHT;y,SCREEN_BOTTOM+99;basezoom,.54);
+		InitCommand=cmd(horizalign,right;x,SCREEN_RIGHT;y,SCREEN_BOTTOM-18;basezoom,.54);
 	};
 
 	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,left;zoom,.51;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM+99);
+		InitCommand=cmd(settext,string.upper(string.sub(profilename,1,8));horizalign,left;zoom,.51;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM-23);
 	};
 
 	--P2 Real Time Score--
@@ -272,12 +307,12 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	local maxcomboP2 = 0;
 	local pscoreP2 = 0;
 	t[#t+1] = LoadFont("_karnivore lite white") .. {
-		InitCommand=cmd(settext,"000.000";horizalign,right;zoom,.62;x,SCREEN_RIGHT-5;y,SCREEN_BOTTOM+99;maxwidth,85);
+		InitCommand=cmd(settext,"00.00%";horizalign,right;zoom,.62;x,SCREEN_RIGHT-5;y,SCREEN_BOTTOM-16;maxwidth,85);
 		JudgmentMessageCommand=function(self,param)
-			self:sleep(0.1);--aca
+			self:sleep(0.1);
 			self:queuecommand('PostLifeChange');
 		end;
-		PostLifeChangeMessageCommand=function(self)--haca
+		PostLifeChangeMessageCommand=function(self)
 			local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2);
 			local perfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
 			local greats = curstats:GetTapNoteScores('TapNoteScore_W3');
@@ -301,33 +336,42 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 			local proc_score = ( (pscoreP2 + pass_bonus) * 100 ) - grade_bonus;
 			if P2judge == ", VJ" or P2judge == ", XJ" or P2judge == ", UJ" then proc_score = proc_score/1.2 end;
 			curstats:SetScore(proc_score);
-			local formatted_pscoreP2 = AddDots(pscoreP2);
-			if pscoreP2 < 10 then
-				formatted_pscoreP2 = "000.00"..formatted_pscoreP2;
-			elseif pscoreP2 < 100 then
-				formatted_pscoreP2 = "000.0"..formatted_pscoreP2;
-			elseif pscoreP2 < 1000 then 
-				formatted_pscoreP2 = "000."..formatted_pscoreP2;
-			elseif pscoreP2 < 10000 then
-				formatted_pscoreP2 = "00"..formatted_pscoreP2;
-			elseif pscoreP2 < 100000 then
-				formatted_pscoreP2 = "0"..formatted_pscoreP2;
-			end
+			local formatted_pscoreP2 = ScoreToPercent(pscoreP2);
+			if pscoreP2 > PersonalBest then
+				self:diffusecolor(color("#00FFFF"))
+			else
+				self:diffusecolor(1,1,1,1)
+			end;
 			self:settext(formatted_pscoreP2);
-			formatted_pscoreP2 = "000.000";
-			pscoreP2 = 0;
 		end;
 	};
 
 	t[#t+1] = LoadFont("","_myriad pro 20px") .. {
-		InitCommand=cmd(settext,P2mods;horizalign,left;zoom,.32;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM+99;diffuse,color("#00FFFF"));
-	};	
+		InitCommand=cmd(settext,P2mods;horizalign,left;zoom,.32;x,SCREEN_RIGHT-105;y,SCREEN_BOTTOM-15;diffuse,color("#00FFFF"));
+	};
+
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenGameplay/new_record") )..{
+		InitCommand=cmd(horizalign,right;zoom,.22;x,SCREEN_RIGHT-53;y,SCREEN_BOTTOM-15,maxwidth,85;visible,false);
+		JudgmentMessageCommand=function(self,param)
+			self:sleep(0.1);
+			self:queuecommand('PostLifeChange');
+		end;
+		PostLifeChangeMessageCommand=function(self)
+			if pscoreP2 >= 1000000 then self:x(SCREEN_RIGHT-53) else self:x(SCREEN_RIGHT-48) end;
+			if pscoreP2 > PersonalBest then
+				self:visible(true)
+				self:glowshift()
+			else
+				self:visible(false)
+			end;
+		end;
+	};
 
 
 	-- P2 Difficulty Ball --
 
 	t[#t+1] = GetSimpleBallLevel( PLAYER_2 )..{ 
-		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_RIGHT-144;playcommand,"ShowUp";y,SCREEN_BOTTOM+99);
+		InitCommand=cmd(horizalign,right;basezoom,.18;x,SCREEN_RIGHT-144;playcommand,"ShowUp";y,SCREEN_BOTTOM-18);
 	};
 
 end;
@@ -335,30 +379,18 @@ end;
 -- Song Title --
 
 local songtitle = GAMESTATE:GetCurrentSong():GetDisplayMainTitle();
-songtitle = string.sub(songtitle,1,45);
+songtitle = string.upper(string.sub(songtitle,1,45));
 
 t[#t+1] = Def.BitmapText {
-	Font="hdkarnivore 24px",
+	Font="_myriad pro 20px",
 	Text="♫"..songtitle,
 	InitCommand=function(self)
-		self:y(SCREEN_BOTTOM+99);
+		self:y(SCREEN_BOTTOM-9);
 		self:x(SCREEN_CENTER_X);
-		self:zoom(.64);
+		self:zoom(.80);
 		self:maxwidth(440);
-		self:AddAttribute(0, {Diffuse = color("#ccfffe"), Length = 1});
+		self:diffuse(color("#ccfffe"));
 	end;
 };
 
-t[#t+1] = LoadActor( THEME:GetPathG("","ScreenGameplay/freeplay") )..{ 
-	InitCommand=function(self)
-		self:x(SCREEN_CENTER_X);
-		self:y(SCREEN_CENTER_Y+230);
-		self:zoom(0.45);
-	end;
-
-	aliveCommand=function(self)
-
-	end;
-};
--- brunofz toda la verga de abajo --
 return t;

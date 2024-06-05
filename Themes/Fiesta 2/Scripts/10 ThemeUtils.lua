@@ -109,6 +109,30 @@ function AddDots( score )
 	end;
 end;
 
+function ScoreToPercent( score )
+	local formatted_score = ""
+	if score < 100 then
+		formatted_score = "00.00"
+	elseif score < 1000 then
+		formatted_score = "00.0" .. math.floor(score/100);
+	elseif score < 10000 then
+		formatted_score = "00." .. math.floor(score/100);
+	elseif score < 100000 then
+		local relevant_digits = math.floor(score/100);
+		local integer_part = "0" .. string.sub(relevant_digits,1,1);
+		local decimal_part = string.sub(relevant_digits,2,2) .. string.sub(relevant_digits,3,3);
+		formatted_score = integer_part .. "." .. decimal_part;
+	elseif score < 1000000 then
+		local relevant_digits = math.floor(score/100);
+		local integer_part = string.sub(relevant_digits,1,2);
+		local decimal_part = string.sub(relevant_digits,3,4);
+		formatted_score = integer_part .. "." .. decimal_part;
+	else
+		formatted_score = "100.00"
+	end
+	return formatted_score .. "%"
+end
+
 
 --/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- P. SCORE FUNCTIONS --
